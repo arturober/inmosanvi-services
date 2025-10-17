@@ -2,6 +2,8 @@ import { ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { IS_PUBLIC_KEY } from './decorators/public.decorator';
+import { catchError, map, Observable, of } from 'rxjs';
+import { fromPromise } from 'rxjs/internal/observable/innerFrom';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -15,14 +17,21 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       context.getClass(),
     ]);
 
+    const canActivate = super.canActivate(context);
+    const canActivate$ =
+      canActivate instanceof Promise
+        ? fromPromise(canActivate)
+        : (canActivate as Observable<boolean>);
+
     if (isPublic) {
-      // For public routes, we will attempt to authenticate but not fail if it doesn't succeed.
-      // We override handleRequest to achieve this.
-      return true;
+      return canActivate$.pipe(
+        catchError(() => of(true)),
+        map(() => true), // Siempre permitir el acceso a rutas públicas
+      );
     }
 
-    // For protected routes, proceed with the default authentication flow.
-    return super.canActivate(context);
+    // Para rutas protegidas, se mantiene el comportamiento por defecto.
+    return canActivate$;
   }
 
   handleRequest(err, user) {

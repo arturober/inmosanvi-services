@@ -28,7 +28,6 @@ export class PropertyService {
     private readonly imageService: ImageService,
   ) {}
 
-  // TODO: Implementar filtros
   findAll(filters?: PropertyFilters) {
     const filterQuery: FilterQuery<RealstateProperty> = {};
     if (filters?.seller) {

@@ -49,12 +49,14 @@ export class PropertyController {
   @Get()
   @Public()
   async findAll(
+    @AuthUser() authUser: User,
     @Query('seller', new DefaultValuePipe(0), ParseIntPipe) seller?: number,
     @Query('province', new DefaultValuePipe(0), ParseIntPipe) province?: number,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page?: number,
     @Query('search', new DefaultValuePipe('')) search?: string,
     @Query('sold', new DefaultValuePipe(false), ParseBoolPipe) sold?: boolean,
   ) {
+    console.log(authUser);
     page = page ?? 1;
     const filters = new PropertyFilters(seller, province, search, sold, page);
     const [properties, total] = await this.propertyService.findAll(filters);
