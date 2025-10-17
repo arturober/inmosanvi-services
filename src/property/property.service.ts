@@ -174,6 +174,13 @@ export class PropertyService {
       .removeAndFlush(property);
   }
 
+  async getPhotos(id: number) {
+    const property = await this.propertyRepository.findOneOrFail(id, {
+      populate: ['photos'],
+    });
+    return property.photos.getItems();
+  }
+
   async addphoto(authUser: User, id: number, addPhotoDto: AddPhotoDto) {
     const property = await this.propertyRepository.findOneOrFail(id, {
       populate: ['photos', 'seller'],
