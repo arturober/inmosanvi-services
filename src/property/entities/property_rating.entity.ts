@@ -1,16 +1,18 @@
 import {
-  AfterUpsert,
+  AfterCreate,
+  AfterDelete,
+  AfterUpdate,
   Entity,
-  type EventArgs,
   ManyToOne,
   PrimaryKey,
   Property,
   ref,
   Unique,
+  type EventArgs,
   type Ref,
 } from '@mikro-orm/core';
-import { RealstateProperty } from './realstate_property.entity';
 import { User } from '../../user/entities/user.entity';
+import { RealstateProperty } from './realstate_property.entity';
 
 @Entity({ tableName: 'property_rating' })
 @Unique({ properties: ['property', 'user'] })
@@ -38,14 +40,18 @@ export class PropertyRating {
   })
   user!: Ref<User>;
 
-  @AfterUpsert()
+  @AfterUpdate()
+  @AfterCreate()
+  @AfterDelete()
   async updateTotalRating(args: EventArgs<PropertyRating>) {
     const property = args.entity.property.getEntity();
+    await property.ratings.loadItems();
     const ratings = property.ratings.getItems();
     const totalRating = ratings.reduce((acc, rating) => acc + rating.rating, 0);
-    property.totalRating = totalRating / ratings.length;
-    args.em.persist(property);
-    await args.em.flush();
+    property.totalRating = ratings.length ? totalRating / ratings.length : 0;
+    await args.em.nativeUpdate(RealstateProperty, property.id, {
+      totalRating: property.totalRating,
+    });
   }
 
   constructor(

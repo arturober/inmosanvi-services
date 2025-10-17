@@ -281,4 +281,21 @@ export class PropertyService {
       { populate: ['user'] },
     );
   }
+
+  async removeRating(authUser: User, propertyId: number, ratingId: number) {
+    const rating = await this.ratingRepository.findOneOrFail(ratingId, {
+      populate: ['user', 'property'],
+    });
+    if (rating.user.id !== authUser.id) {
+      throw new ForbiddenException(
+        "This rating doesn't belong to you. You can't remove it",
+      );
+    }
+    if (rating.property.id !== propertyId) {
+      throw new ForbiddenException(
+        "This rating doesn't belong to this property. You can't remove it",
+      );
+    }
+    await this.ratingRepository.getEntityManager().removeAndFlush(rating);
+  }
 }

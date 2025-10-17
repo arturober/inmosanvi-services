@@ -1,4 +1,11 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator';
 
 export class AddRatingDto {
   @IsString()
@@ -7,5 +14,7 @@ export class AddRatingDto {
 
   @IsNumber()
   @IsNotEmpty()
+  @Min(1)
+  @Max(5)
   readonly rating: number;
 }

@@ -62,7 +62,7 @@ export class RealstateProperty {
     unique: 'main_photo_2',
     ref: true,
     serializer: (p: EntityRef<PropertyPhoto>) => {
-      if (!p) {
+      if (!p || !p.isInitialized()) {
         return null;
       }
       const photo = p.getEntity();
@@ -77,10 +77,10 @@ export class RealstateProperty {
   @Property({
     fieldName: 'created_at',
     type: 'datetime',
-    defaultRaw: 'CURRENT_TIMESTAMP',
+    onCreate: () => new Date(),
     index: true,
   })
-  createdAt = new Date();
+  createdAt: Date;
 
   @Enum({
     items: () => PropertyState,
@@ -99,6 +99,7 @@ export class RealstateProperty {
 
   @OneToMany(() => PropertyPhoto, (photo) => photo.property, {
     cascade: [Cascade.ALL],
+    orphanRemoval: true,
   })
   photos = new Collection<PropertyPhoto>(this);
 

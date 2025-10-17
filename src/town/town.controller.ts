@@ -2,18 +2,18 @@ import { Controller, Get, Param } from '@nestjs/common';
 import { TownService } from './town.service';
 import { Public } from 'src/auth/decorators/public.decorator';
 
-@Controller('town')
+@Controller('provinces')
 export class TownController {
   constructor(private readonly townService: TownService) {}
 
   @Public()
-  @Get('provinces')
+  @Get('')
   async findAllProvinces() {
     return this.townService.findAllprovinces();
   }
 
   @Public()
-  @Get('province/:id/towns')
+  @Get(':id/towns')
   async findTownsByProvince(@Param('id') id: string) {
     return this.townService.findByProvince(+id);
   }

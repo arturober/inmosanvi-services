@@ -98,6 +98,7 @@ export class PropertyController {
   }
 
   @Get(':id/photos')
+  @Public()
   async getPhotos(@Param('id', ParseIntPipe) id: number) {
     return { photos: await this.propertyService.getPhotos(+id) };
   }
@@ -152,6 +153,16 @@ export class PropertyController {
   @Public()
   async getRatings(@Param('id', ParseIntPipe) id: number) {
     return { ratings: await this.propertyService.getRatings(id) };
+  }
+
+  @Delete(':id/ratings/:ratingId')
+  @HttpCode(204)
+  async removeRating(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('ratingId', ParseIntPipe) ratingId: number,
+    @AuthUser() authUser: User,
+  ) {
+    await this.propertyService.removeRating(authUser, id, ratingId);
   }
 
   @Post(':id/questions')
