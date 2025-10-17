@@ -6,8 +6,8 @@ import {
   ref,
   type Ref,
 } from '@mikro-orm/core';
-import { RealstateProperty } from 'src/property/entities/realstate_property.entity';
-import { User } from 'src/user/entities/user.entity';
+import { RealstateProperty } from '../../property/entities/realstate_property.entity';
+import { User } from '../../user/entities/user.entity';
 
 @Entity({ tableName: 'property_question' })
 export class PropertyQuestion {

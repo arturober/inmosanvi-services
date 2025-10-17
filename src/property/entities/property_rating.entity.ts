@@ -10,7 +10,7 @@ import {
   type Ref,
 } from '@mikro-orm/core';
 import { RealstateProperty } from './realstate_property.entity';
-import { User } from 'src/user/entities/user.entity';
+import { User } from '../../user/entities/user.entity';
 
 @Entity({ tableName: 'property_rating' })
 @Unique({ properties: ['property', 'user'] })
@@ -25,7 +25,7 @@ export class PropertyRating {
   comment?: string;
 
   @ManyToOne({
-    entity: () => Property,
+    entity: () => RealstateProperty,
     fieldName: 'property',
     index: 'rating_property_fk',
   })

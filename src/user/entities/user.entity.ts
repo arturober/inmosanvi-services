@@ -8,7 +8,7 @@ import {
   Property,
 } from '@mikro-orm/core';
 import { Exclude } from 'class-transformer';
-import { RealstateProperty } from 'src/property/entities/realstate_property.entity';
+import { RealstateProperty } from '../../property/entities/realstate_property.entity';
 
 @Entity()
 export class User {

@@ -4,10 +4,10 @@ import {
   ManyToOne,
   PrimaryKey,
   Property,
+  type Ref,
 } from '@mikro-orm/core';
 import { Exclude } from 'class-transformer';
 import { RealstateProperty } from './realstate_property.entity';
-import { Ref } from 'node_modules/@mikro-orm/core/entity';
 
 @Entity({ tableName: 'property_photo' })
 export class PropertyPhoto {
