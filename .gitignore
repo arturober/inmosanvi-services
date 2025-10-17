@@ -55,8 +55,8 @@ pids
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
-img/*
-!img/.gitkeep
+img/users/*
+img/properties/*
 !img/users/.gitkeep
 !img/properties/.gitkeep
 

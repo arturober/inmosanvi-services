@@ -56,17 +56,22 @@ export class PropertyController {
     @Query('search', new DefaultValuePipe('')) search?: string,
     @Query('sold', new DefaultValuePipe(false), ParseBoolPipe) sold?: boolean,
   ) {
-    console.log(authUser);
     page = page ?? 1;
     const filters = new PropertyFilters(seller, province, search, sold, page);
-    const [properties, total] = await this.propertyService.findAll(filters);
+    const [properties, total] = await this.propertyService.findAll(
+      filters,
+      authUser,
+    );
     return new PropertiesResponse(properties, total, page, page * 12 < total);
   }
 
   @Get(':id')
   @Public()
-  async findOne(@Param('id') id: string) {
-    return new SinglePropertyResponse(await this.propertyService.findOne(+id));
+  async findOne(@AuthUser() authUser: User, @Param('id') id: string) {
+    console.log(authUser);
+    return new SinglePropertyResponse(
+      await this.propertyService.findOne(+id, authUser),
+    );
   }
 
   @Put(':id')

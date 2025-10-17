@@ -1,9 +1,13 @@
-import { ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
-import { IS_PUBLIC_KEY } from './decorators/public.decorator';
 import { catchError, map, Observable, of } from 'rxjs';
 import { fromPromise } from 'rxjs/internal/observable/innerFrom';
+import { IS_PUBLIC_KEY } from './decorators/public.decorator';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -34,9 +38,20 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     return canActivate$;
   }
 
-  handleRequest(err, user) {
-    if (err) {
-      throw err;
+  handleRequest(err, user, info, context: ExecutionContext) {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    // Si hay un error de JWT (ej. token expirado) y la ruta NO es pública, lanzamos el error.
+    if (err && !isPublic) {
+      throw err || new UnauthorizedException();
+    }
+
+    // Si no hay usuario (sin token, token inválido) y la ruta NO es pública, lanzamos error.
+    if (!user && !isPublic) {
+      throw err || new UnauthorizedException();
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-return

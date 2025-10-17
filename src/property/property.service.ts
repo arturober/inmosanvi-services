@@ -1,20 +1,32 @@
-import { EntityRepository, FilterQuery, ref } from '@mikro-orm/core';
+import {
+  EntityRepository,
+  FilterQuery,
+  QBFilterQuery,
+  QueryBuilder,
+  QueryOrderMap,
+  raw,
+  ref,
+} from '@mikro-orm/better-sqlite';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ImageService } from 'src/commons/image/image.service';
 import { Town } from 'src/town/entitites/town.entity';
 import { User } from '../user/entities/user.entity';
 import { AddPhotoDto } from './dto/add-photo.dto';
+import { AddRatingDto } from './dto/add-rating.dto';
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { UpdatePropertyDto } from './dto/update-property.dto';
 import { PropertyPhoto } from './entities/property_photo.entity';
+import { PropertyRating } from './entities/property_rating.entity';
 import {
   PropertyState,
   RealstateProperty,
 } from './entities/realstate_property.entity';
 import { PropertyFilters } from './property.filters';
-import { AddRatingDto } from './dto/add-rating.dto';
-import { PropertyRating } from './entities/property_rating.entity';
 
 @Injectable()
 export class PropertyService {
@@ -28,7 +40,40 @@ export class PropertyService {
     private readonly imageService: ImageService,
   ) {}
 
-  findAll(filters?: PropertyFilters) {
+  private createPropertySelectQuery(
+    authUser?: User,
+    includeSeller = false,
+    includeRated = false,
+    where: QBFilterQuery<RealstateProperty> = {},
+    orderBy: QueryOrderMap<RealstateProperty> = { createdAt: 'DESC' },
+    page = 1,
+  ): QueryBuilder<RealstateProperty> {
+    const query = this.propertyRepository.createQueryBuilder('p');
+
+    query.where(where);
+    query.orderBy(orderBy);
+    query.limit(12).offset((page - 1) * 12);
+    query.leftJoinAndSelect('p.town', 'town');
+    query.leftJoinAndSelect('p.mainPhoto', 'mainPhoto');
+    query.leftJoinAndSelect('town.province', 'province');
+    if (includeSeller) {
+      query.leftJoinAndSelect('p.seller', 'seller');
+    }
+    if (authUser) {
+      query.addSelect(raw(`${authUser.id} = p.seller as mine`));
+      if (includeRated) {
+        query.addSelect(
+          raw(
+            `EXISTS(SELECT 1 FROM property_rating r WHERE r.property = p.id AND r.user = ${authUser.id}) as rated`,
+          ),
+        );
+      }
+    }
+
+    return query;
+  }
+
+  findAll(filters?: PropertyFilters, authUser?: User) {
     const filterQuery: FilterQuery<RealstateProperty> = {};
     if (filters?.seller) {
       filterQuery.seller = filters.seller;
@@ -48,18 +93,32 @@ export class PropertyService {
       filterQuery.status = { $ne: PropertyState.SOLD };
     }
 
-    return this.propertyRepository.findAndCount(filterQuery, {
-      populate: ['mainPhoto', 'seller', 'town'],
-      orderBy: { createdAt: 'DESC' },
-      limit: 12,
-      offset: (filters?.page ?? 1) - 1,
-    });
+    return this.createPropertySelectQuery(
+      authUser,
+      false,
+      false,
+      filterQuery,
+      { createdAt: 'DESC' },
+      filters?.page ?? 1,
+    ).getResultAndCount();
   }
 
-  async findOne(id: number) {
-    return await this.propertyRepository.findOneOrFail(id, {
-      populate: ['mainPhoto', 'seller', 'town'],
-    });
+  async findOne(id: number, authUser?: User) {
+    const property = await this.createPropertySelectQuery(
+      authUser,
+      true,
+      true,
+      {
+        id,
+      },
+    ).getSingleResult();
+    if (!property) {
+      throw new NotFoundException({
+        status: 404,
+        error: 'Property not found with id ' + id,
+      });
+    }
+    return property;
   }
 
   async create(authUser: User, createPropertyDto: CreatePropertyDto) {

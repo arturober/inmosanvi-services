@@ -47,6 +47,12 @@ export class RealstateProperty {
   @Property({ type: 'double', default: 0 })
   totalRating?: number;
 
+  @Property({ persist: false })
+  mine?: boolean;
+
+  @Property({ persist: false })
+  rated?: boolean;
+
   @OneToOne({
     entity: () => PropertyPhoto,
     fieldName: 'main_photo',
