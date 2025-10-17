@@ -160,7 +160,9 @@ export class PropertyService {
   }
 
   async remove(authUser: User, id: number) {
-    const property = this.propertyRepository.getReference(id);
+    const property = await this.propertyRepository.findOneOrFail(id, {
+      populate: ['seller', 'mainPhoto'],
+    });
     if (property.seller.id !== authUser.id) {
       throw new ForbiddenException(
         "This property doesn't belong to you. You can't delete it",

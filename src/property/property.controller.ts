@@ -67,86 +67,92 @@ export class PropertyController {
 
   @Get(':id')
   @Public()
-  async findOne(@AuthUser() authUser: User, @Param('id') id: string) {
+  async findOne(
+    @AuthUser() authUser: User,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
     console.log(authUser);
     return new SinglePropertyResponse(
-      await this.propertyService.findOne(+id, authUser),
+      await this.propertyService.findOne(id, authUser),
     );
   }
 
   @Put(':id')
   @HttpCode(204)
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @AuthUser() authUser: User,
     @Body(new ValidationPipe({ transform: true, whitelist: true }))
     updatePropertyDto: UpdatePropertyDto,
   ) {
-    await this.propertyService.update(authUser, +id, updatePropertyDto);
+    await this.propertyService.update(authUser, id, updatePropertyDto);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  async remove(@Param('id') id: string, @AuthUser() authUser: User) {
-    await this.propertyService.remove(authUser, +id);
+  async remove(
+    @Param('id', ParseIntPipe) id: number,
+    @AuthUser() authUser: User,
+  ) {
+    await this.propertyService.remove(authUser, id);
   }
 
   @Post(':id/photos')
   @HttpCode(201)
   async addPhoto(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @AuthUser() authUser: User,
     @Body(new ValidationPipe({ transform: true, whitelist: true }))
     addPhotoDto: AddPhotoDto,
   ) {
     return {
-      photo: await this.propertyService.addphoto(authUser, +id, addPhotoDto),
+      photo: await this.propertyService.addphoto(authUser, id, addPhotoDto),
     };
   }
 
   @Delete(':id/photos/:photoId')
   @HttpCode(204)
   async removePhoto(
-    @Param('id') id: string,
-    @Param('photoId') photoId: string,
+    @Param('id', ParseIntPipe) id: number,
+    @Param('photoId', ParseIntPipe) photoId: number,
     @AuthUser() authUser: User,
   ) {
-    await this.propertyService.removePhoto(authUser, +id, +photoId);
+    await this.propertyService.removePhoto(authUser, id, photoId);
   }
 
   @Put(':id/photos/:photoId/setMain')
   @HttpCode(204)
   async setMainPhoto(
-    @Param('id') id: string,
-    @Param('photoId') photoId: string,
+    @Param('id', ParseIntPipe) id: number,
+    @Param('photoId', ParseIntPipe) photoId: number,
     @AuthUser() authUser: User,
   ) {
-    await this.propertyService.setMainPhoto(authUser, +id, +photoId);
+    await this.propertyService.setMainPhoto(authUser, id, photoId);
   }
 
   @Post(':id/ratings')
   @HttpCode(201)
   async addRating(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @AuthUser() authUser: User,
     @Body(new ValidationPipe({ transform: true, whitelist: true }))
     AddRatingDto: AddRatingDto,
   ) {
     return {
-      rating: await this.propertyService.addRating(authUser, +id, AddRatingDto),
+      rating: await this.propertyService.addRating(authUser, id, AddRatingDto),
     };
   }
 
   @Get(':id/ratings')
   @Public()
-  async getRatings(@Param('id') id: string) {
-    return { ratings: await this.propertyService.getRatings(+id) };
+  async getRatings(@Param('id', ParseIntPipe) id: number) {
+    return { ratings: await this.propertyService.getRatings(id) };
   }
 
   @Post(':id/questions')
   @HttpCode(201)
   async createQuestion(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @AuthUser() authUser: User,
     @Body(new ValidationPipe({ transform: true, whitelist: true }))
     createQuestionDto: CreateQuestionDto,
@@ -154,7 +160,7 @@ export class PropertyController {
     return {
       question: await this.questionService.create(
         authUser,
-        +id,
+        id,
         createQuestionDto,
       ),
     };
@@ -162,7 +168,7 @@ export class PropertyController {
 
   @Get(':id/questions')
   @Public()
-  async getQuestions(@Param('id') id: string) {
-    return { questions: await this.questionService.getQuestions(+id) };
+  async getQuestions(@Param('id', ParseIntPipe) id: number) {
+    return { questions: await this.questionService.getQuestions(id) };
   }
 }

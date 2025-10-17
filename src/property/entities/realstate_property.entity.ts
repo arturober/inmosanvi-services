@@ -56,7 +56,7 @@ export class RealstateProperty {
   @OneToOne({
     entity: () => PropertyPhoto,
     fieldName: 'main_photo',
-    cascade: [Cascade.MERGE],
+    cascade: [Cascade.MERGE, Cascade.REMOVE],
     nullable: true,
     index: 'main_photo',
     unique: 'main_photo_2',
