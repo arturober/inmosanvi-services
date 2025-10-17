@@ -91,6 +91,11 @@ export class PropertyController {
     await this.propertyService.remove(authUser, +id);
   }
 
+  @Get(':id/photos')
+  async getPhotos(@Param('id', ParseIntPipe) id: number) {
+    return { photos: await this.propertyService.getPhotos(+id) };
+  }
+
   @Post(':id/photos')
   @HttpCode(201)
   async addPhoto(
