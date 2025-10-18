@@ -12,7 +12,7 @@ import { User } from 'src/user/entities/user.entity';
 import { QuestionService } from './question.service';
 import { AnswerQuestionDto } from './dto/anwer-question.dto';
 
-@Controller('question')
+@Controller('questions')
 export class QuestionController {
   constructor(private readonly questionService: QuestionService) {}
 

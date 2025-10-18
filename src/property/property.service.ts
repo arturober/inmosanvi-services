@@ -83,8 +83,8 @@ export class PropertyService {
     }
     if (filters?.search) {
       filterQuery.$or = [
-        { title: { $ilike: `%${filters.search}%` } },
-        { description: { $ilike: `%${filters.search}%` } },
+        { title: { $like: `%${filters.search}%` } },
+        { description: { $like: `%${filters.search}%` } },
       ];
     }
     if (filters?.sold) {
