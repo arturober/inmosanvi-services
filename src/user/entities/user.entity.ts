@@ -18,7 +18,7 @@ export class User {
   @Property({ length: 200, nullable: false })
   name!: string;
 
-  @Property({ length: 250, nullable: false })
+  @Property({ length: 250, nullable: false, unique: true })
   email!: string;
 
   @Property({ length: 100, nullable: false, hidden: true })

@@ -19,6 +19,7 @@ export class PropertyPhoto {
     entity: () => RealstateProperty,
     fieldName: 'property',
     cascade: [Cascade.MERGE],
+    deleteRule: 'cascade',
     index: 'photo_property_fk',
   })
   property!: Ref<RealstateProperty>;

@@ -7,6 +7,7 @@ import { CommonsModule } from 'src/commons/commons.module';
 import { PropertyPhoto } from './entities/property_photo.entity';
 import { PropertyRating } from './entities/property_rating.entity';
 import { QuestionModule } from 'src/question/question.module';
+import { PropertyQuestion } from 'src/question/entities/property-question.entity';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { QuestionModule } from 'src/question/question.module';
       RealstateProperty,
       PropertyPhoto,
       PropertyRating,
+      PropertyQuestion,
     ]),
     QuestionModule,
     CommonsModule,

@@ -9,12 +9,12 @@ export class TownController {
   @Public()
   @Get('')
   async findAllProvinces() {
-    return this.townService.findAllprovinces();
+    return { provinces: await this.townService.findAllprovinces() };
   }
 
   @Public()
   @Get(':id/towns')
   async findTownsByProvince(@Param('id') id: string) {
-    return this.townService.findByProvince(+id);
+    return { towns: await this.townService.findByProvince(+id) };
   }
 }

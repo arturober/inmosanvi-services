@@ -71,7 +71,6 @@ export class PropertyController {
     @AuthUser() authUser: User,
     @Param('id', ParseIntPipe) id: number,
   ) {
-    console.log(authUser);
     return new SinglePropertyResponse(
       await this.propertyService.findOne(id, authUser),
     );

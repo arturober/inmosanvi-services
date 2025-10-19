@@ -27,6 +27,7 @@ import {
   RealstateProperty,
 } from './entities/realstate_property.entity';
 import { PropertyFilters } from './property.filters';
+import { PropertyQuestion } from 'src/question/entities/property-question.entity';
 
 @Injectable()
 export class PropertyService {
@@ -73,13 +74,10 @@ export class PropertyService {
     return query;
   }
 
-  findAll(filters?: PropertyFilters, authUser?: User) {
+  async findAll(filters?: PropertyFilters, authUser?: User) {
     const filterQuery: FilterQuery<RealstateProperty> = {};
     if (filters?.seller) {
       filterQuery.seller = filters.seller;
-    }
-    if (filters?.province) {
-      filterQuery.town = { province: filters.province };
     }
     if (filters?.search) {
       filterQuery.$or = [
@@ -87,20 +85,25 @@ export class PropertyService {
         { description: { $like: `%${filters.search}%` } },
       ];
     }
+
     if (filters?.sold) {
       filterQuery.status = PropertyState.SOLD;
     } else {
       filterQuery.status = { $ne: PropertyState.SOLD };
     }
 
-    return this.createPropertySelectQuery(
+    const properties = this.createPropertySelectQuery(
       authUser,
       false,
       false,
       filterQuery,
       { createdAt: 'DESC' },
       filters?.page ?? 1,
-    ).getResultAndCount();
+    );
+    if (filters?.province) {
+      properties.andWhere({ 'town.province': filters.province });
+    }
+    return await properties.getResultAndCount();
   }
 
   async findOne(id: number, authUser?: User) {
@@ -168,10 +171,23 @@ export class PropertyService {
         "This property doesn't belong to you. You can't delete it",
       );
     }
-    await this.imageService.removeImage(property.mainPhoto!.getEntity().url);
-    return await this.propertyRepository
+    await this.propertyRepository
       .getEntityManager()
-      .removeAndFlush(property);
+      .transactional(async (em) => {
+        if (property.mainPhoto) {
+          await em.removeAndFlush(property.mainPhoto.getEntity());
+        }
+        await em.createQueryBuilder(PropertyPhoto).delete().where({
+          property,
+        });
+        await em.createQueryBuilder(PropertyRating).delete().where({
+          property,
+        });
+        await em.createQueryBuilder(PropertyQuestion).delete().where({
+          property,
+        });
+        await em.removeAndFlush(property);
+      });
   }
 
   async getPhotos(id: number) {

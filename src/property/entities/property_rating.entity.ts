@@ -2,6 +2,7 @@ import {
   AfterCreate,
   AfterDelete,
   AfterUpdate,
+  Cascade,
   Entity,
   ManyToOne,
   PrimaryKey,
@@ -29,6 +30,8 @@ export class PropertyRating {
   @ManyToOne({
     entity: () => RealstateProperty,
     fieldName: 'property',
+    cascade: [Cascade.MERGE],
+    deleteRule: 'cascade',
     index: 'rating_property_fk',
   })
   property!: Ref<RealstateProperty>;
@@ -36,6 +39,8 @@ export class PropertyRating {
   @ManyToOne({
     entity: () => User,
     fieldName: 'user',
+    cascade: [Cascade.MERGE],
+    deleteRule: 'cascade',
     index: 'rating_user_fk',
   })
   user!: Ref<User>;

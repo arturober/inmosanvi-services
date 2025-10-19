@@ -105,6 +105,7 @@ export class RealstateProperty {
 
   @OneToMany(() => PropertyRating, (rating) => rating.property, {
     cascade: [Cascade.ALL],
+    orphanRemoval: true,
   })
   ratings = new Collection<PropertyRating>(this);
 
