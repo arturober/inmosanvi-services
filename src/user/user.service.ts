@@ -7,6 +7,7 @@ import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UpdatePhotoDto } from './dto/update-photo.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { auth } from 'google-auth-library';
 
 @Injectable()
 export class UserService {
@@ -63,8 +64,18 @@ export class UserService {
     authUser: User,
     propertyId: number,
   ): Promise<void> {
-    authUser.favourites.remove(this.propertiesRepo.getReference(propertyId));
-    await this.usersRepo.getEntityManager().flush();
+    const em = this.propertiesRepo.getEntityManager();
+    const userMeta = em.getMetadata().get(User);
+    const favouritesProp = userMeta.properties.favourites;
+
+    // Nombres de la tabla y columnas de la relación
+    const pivotTableName = favouritesProp.pivotTable;
+    const userIdColumn = favouritesProp.joinColumns[0];
+    const propIdColumn = favouritesProp.inverseJoinColumns[0];
+
+    const sql = `DELETE FROM "${pivotTableName}" WHERE "${userIdColumn}" = ? AND "${propIdColumn}" = ?`;
+
+    await em.getConnection().execute(sql, [authUser.id, propertyId]);
   }
 
   async getFavouriteProperties(userId: number) {
