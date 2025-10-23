@@ -1,13 +1,12 @@
 import { EntityRepository } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ImageService } from 'src/commons/image/image.service';
 import { RealstateProperty } from 'src/property/entities/realstate_property.entity';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { UpdatePhotoDto } from './dto/update-photo.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { auth } from 'google-auth-library';
 
 @Injectable()
 export class UserService {
@@ -56,6 +55,17 @@ export class UserService {
     propertyId: number,
   ): Promise<void> {
     const property = await this.propertiesRepo.findOneOrFail(propertyId);
+    const exist = await this.usersRepo.findOneOrFail({
+      id: authUser.id,
+      favourites: propertyId,
+    });
+
+    if (exist) {
+      throw new BadRequestException(
+        'This property is already in your favourites.',
+      );
+    }
+
     authUser.favourites.add(property);
     await this.usersRepo.getEntityManager().flush();
   }
