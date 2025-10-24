@@ -24,7 +24,17 @@ export class PropertyPhoto {
   })
   property!: Ref<RealstateProperty>;
 
-  @Property({ fieldName: 'photo_url', type: 'string', length: 255 })
+  @Property({
+    fieldName: 'photo_url',
+    type: 'string',
+    length: 255,
+    serializer: (p: string) => {
+      const baseUrl =
+        (process.env.BASE_URL || 'http://localhost:3000') +
+        (process.env.BASE_PATH || '');
+      return `${baseUrl}/${p}`;
+    },
+  })
   url!: string;
 
   @Property({ fieldName: 'is_main', type: 'boolean', default: false })
