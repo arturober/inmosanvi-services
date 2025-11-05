@@ -3,7 +3,6 @@ import { TsMorphMetadataProvider } from '@mikro-orm/reflection';
 import { SeedManager } from '@mikro-orm/seeder';
 import { SqliteDriver } from '@mikro-orm/sqlite';
 import { NotFoundException } from '@nestjs/common';
-import { Database } from 'sqlite';
 
 type FindOneOrFailHandler = (
   entityName: string,
