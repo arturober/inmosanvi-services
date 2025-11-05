@@ -1,8 +1,8 @@
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Injectable } from '@nestjs/common';
-import { EntityRepository } from '@mikro-orm/sqlite';
 import { Province } from './entitites/province.entity';
 import { Town } from './entitites/town.entity';
+import { EntityRepository } from '@mikro-orm/core';
 
 @Injectable()
 export class TownService {

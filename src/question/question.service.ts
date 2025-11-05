@@ -1,10 +1,10 @@
-import { EntityRepository } from '@mikro-orm/better-sqlite';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { RealstateProperty } from 'src/property/entities/realstate_property.entity';
 import { User } from 'src/user/entities/user.entity';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { PropertyQuestion } from './entities/property-question.entity';
+import { EntityRepository } from '@mikro-orm/core';
 
 @Injectable()
 export class QuestionService {

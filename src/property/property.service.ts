@@ -6,7 +6,7 @@ import {
   QueryOrderMap,
   raw,
   ref,
-} from '@mikro-orm/better-sqlite';
+} from '@mikro-orm/sqlite';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import {
   ForbiddenException,
