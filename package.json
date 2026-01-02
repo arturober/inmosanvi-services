@@ -31,6 +31,7 @@
     "@mikro-orm/seeder": "^6.4.16",
     "@mikro-orm/sqlite": "^6.5.9",
     "@nestjs/common": "^11.0.1",
+    "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/mapped-types": "*",

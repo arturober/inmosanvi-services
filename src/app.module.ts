@@ -9,9 +9,11 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { QuestionModule } from './question/question.module';
 import configuration from './app.config';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     MikroOrmModule.forRoot(mikroOrmConfig),
     TownModule,
     PropertyModule,
