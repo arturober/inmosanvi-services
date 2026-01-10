@@ -77,7 +77,6 @@ export class PropertyController {
   }
 
   @Put(':id')
-  @HttpCode(204)
   async update(
     @Param('id', ParseIntPipe) id: number,
     @AuthUser() authUser: User,
