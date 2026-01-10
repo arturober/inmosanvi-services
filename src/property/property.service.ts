@@ -149,7 +149,22 @@ export class PropertyService {
     id: number,
     updatePropertyDto: UpdatePropertyDto,
   ) {
-    const property = await this.propertyRepository.findOneOrFail(id);
+    const property = await this.propertyRepository.findOneOrFail(id, {
+      populate: ['seller', 'mainPhoto'],
+    });
+
+    if (
+      property.mainPhoto &&
+      updatePropertyDto.mainPhoto &&
+      !updatePropertyDto.mainPhoto.startsWith('http')
+    ) {
+      property.mainPhoto.getEntity().url = await this.imageService.saveImage(
+        'properties',
+        updatePropertyDto.mainPhoto,
+      );
+    }
+    delete updatePropertyDto.mainPhoto;
+
     if (property.seller.id !== authUser.id) {
       throw new ForbiddenException(
         "This property doesn't belong to you. You can't update it",

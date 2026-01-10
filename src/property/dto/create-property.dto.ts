@@ -42,7 +42,7 @@ export class CreatePropertyDto {
   readonly numBaths: number;
 
   @IsString()
-  readonly mainPhoto: string;
+  mainPhoto: string;
 
   selling = 'selling';
 }

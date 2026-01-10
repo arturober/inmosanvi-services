@@ -10,6 +10,7 @@ import {
   PrimaryKey,
   Property,
   ref,
+  t,
   type Ref,
 } from '@mikro-orm/core';
 import { Town } from '../../town/entitites/town.entity';
@@ -76,8 +77,9 @@ export class RealstateProperty {
 
   @Property({
     fieldName: 'created_at',
-    type: 'datetime',
-    onCreate: () => new Date(),
+    type: t.datetime,
+    defaultRaw: 'CURRENT_TIMESTAMP',
+    trackChanges: false,
     index: true,
   })
   createdAt: Date;
