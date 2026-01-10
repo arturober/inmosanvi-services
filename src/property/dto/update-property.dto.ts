@@ -6,5 +6,5 @@ export class UpdatePropertyDto extends PartialType(CreatePropertyDto) {
   @IsString()
   @IsEnum(['selling', 'reserved', 'sold'])
   @IsOptional()
-  status?: 'selling' | 'reserved' | 'sold';
+  status?: 'selling' | 'reserved' | 'sold' = 'selling';
 }
