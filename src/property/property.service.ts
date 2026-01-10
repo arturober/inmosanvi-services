@@ -174,7 +174,9 @@ export class PropertyService {
     if (updatePropertyDto.townId) {
       property.town = ref(Town, updatePropertyDto.townId);
     }
-    return this.propertyRepository.getEntityManager().persistAndFlush(property);
+    await this.propertyRepository.getEntityManager().persistAndFlush(property);
+    await property.town.loadOrFail();
+    return property;
   }
 
   async remove(authUser: User, id: number) {

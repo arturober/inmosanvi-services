@@ -84,7 +84,9 @@ export class PropertyController {
     @Body(new ValidationPipe({ transform: true, whitelist: true }))
     updatePropertyDto: UpdatePropertyDto,
   ) {
-    await this.propertyService.update(authUser, id, updatePropertyDto);
+    return new SinglePropertyResponse(
+      await this.propertyService.update(authUser, id, updatePropertyDto),
+    );
   }
 
   @Delete(':id')
