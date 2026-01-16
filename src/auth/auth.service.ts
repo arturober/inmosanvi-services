@@ -115,7 +115,7 @@ export class AuthService {
       });
       const respImg = (
         await axios.get('https://graph.facebook.com/me/picture', {
-          params: paramsImg.toString(),
+          params: paramsImg,
         })
       ).data as BinaryType;
       const avatar = await this.imageService.saveImageBinary('users', respImg);
